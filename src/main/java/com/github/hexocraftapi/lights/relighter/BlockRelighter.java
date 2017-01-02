@@ -58,47 +58,65 @@ public class BlockRelighter
 
 	public void createLight()
 	{
-		for(LightLocation ll : blocks)
-			NmsWorldUtil.setBlockLight(ll.getLocation(), ll.getLight());
-
-		for(Location l : airs)
-			NmsWorldUtil.relightBlock(l);
-
-		// Update chunck
-		for(Chunk chunk : chunks)
+		synchronized(blocks)
 		{
-			NmsChunkUtil.initLighting(chunk);
-			NmsChunkUtil.sendUpdate(chunk, PlayerUtil.getOnlinePlayers());
-		}
+			synchronized(blocks)
+			{
+				synchronized(blocks)
+				{
+					for(LightLocation ll : blocks)
+						NmsWorldUtil.setBlockLight(ll.getLocation(), ll.getLight());
 
-		//
-		blocks.clear();
-		airs.clear();
-		chunks.clear();
+					for(Location l : airs)
+						NmsWorldUtil.relightBlock(l);
+
+					// Update chunck
+					for(Chunk chunk : chunks)
+					{
+						NmsChunkUtil.initLighting(chunk);
+						NmsChunkUtil.sendUpdate(chunk, PlayerUtil.getOnlinePlayers());
+					}
+
+					//
+					blocks.clear();
+					airs.clear();
+					chunks.clear();
+				}
+			}
+		}
 	}
 
 	public void removeLight()
 	{
-		for(LightLocation ll : blocks)
-			NmsWorldUtil.setBlockLight(ll.getLocation(), 0);
-
-		for(Location l : airs)
-			NmsWorldUtil.relightSky(l);
-
-		for(Location l : airs)
-			NmsWorldUtil.relightBlock(l);
-
-		// Update chunck
-		for(Chunk chunk : chunks)
+		synchronized(blocks)
 		{
-			NmsChunkUtil.initLighting(chunk);
-			NmsChunkUtil.sendUpdate(chunk, PlayerUtil.getOnlinePlayers());
-		}
+			synchronized(blocks)
+			{
+				synchronized(blocks)
+				{
+					for(LightLocation ll : blocks)
+						NmsWorldUtil.setBlockLight(ll.getLocation(), 0);
 
-		//
-		blocks.clear();
-		airs.clear();
-		chunks.clear();
+					for(Location l : airs)
+						NmsWorldUtil.relightSky(l);
+
+					for(Location l : airs)
+						NmsWorldUtil.relightBlock(l);
+
+					// Update chunck
+					for(Chunk chunk : chunks)
+					{
+						NmsChunkUtil.initLighting(chunk);
+						NmsChunkUtil.sendUpdate(chunk, PlayerUtil.getOnlinePlayers());
+					}
+
+					//
+					blocks.clear();
+					airs.clear();
+					chunks.clear();
+				}
+			}
+		}
 	}
 
 	protected synchronized void addBlock(Location location, int light)
