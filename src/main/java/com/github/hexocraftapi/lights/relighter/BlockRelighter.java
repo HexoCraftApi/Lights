@@ -56,6 +56,13 @@ public class BlockRelighter
 		if(location.getY() < 256 && isTransparent(location, 0, 1, 0)) addAir(location.clone().add(0, 1, 0));
 	}
 
+	public void relight(Block block)
+	{
+		Location location = block.getLocation();
+
+		addBlock(location);
+	}
+
 	public void createLight()
 	{
 		synchronized(blocks)
@@ -124,6 +131,12 @@ public class BlockRelighter
 		blocks.add(new LightLocation(location, light));
 
 		// Chunk that could be affected by light change
+		addBlock(location);
+	}
+
+	protected synchronized void addBlock(Location location)
+	{
+		// Chunk that could be affected by light change
 		chunks.add(location.getChunk());
 		chunks.add(LocationUtil.getCardinalDistance(location, BlockFace.NORTH, 15).getChunk());
 		chunks.add(LocationUtil.getCardinalDistance(location, BlockFace.NORTH_EAST, 15).getChunk());
@@ -140,15 +153,7 @@ public class BlockRelighter
 		airs.add(location);
 
 		// Chunk that could be affected by light change
-		chunks.add(location.getChunk());
-		chunks.add(LocationUtil.getCardinalDistance(location, BlockFace.NORTH, 15).getChunk());
-		chunks.add(LocationUtil.getCardinalDistance(location, BlockFace.NORTH_EAST, 15).getChunk());
-		chunks.add(LocationUtil.getCardinalDistance(location, BlockFace.EAST, 15).getChunk());
-		chunks.add(LocationUtil.getCardinalDistance(location, BlockFace.SOUTH_EAST, 15).getChunk());
-		chunks.add(LocationUtil.getCardinalDistance(location, BlockFace.SOUTH, 15).getChunk());
-		chunks.add(LocationUtil.getCardinalDistance(location, BlockFace.SOUTH_WEST, 15).getChunk());
-		chunks.add(LocationUtil.getCardinalDistance(location, BlockFace.WEST, 15).getChunk());
-		chunks.add(LocationUtil.getCardinalDistance(location, BlockFace.NORTH_WEST, 15).getChunk());
+		addBlock(location);
 	}
 
 	private boolean isTransparent(Location location)

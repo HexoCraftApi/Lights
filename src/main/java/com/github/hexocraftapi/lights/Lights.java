@@ -108,4 +108,23 @@ public class Lights
 		// Send chunks update
 		relighter.removeLight();
     }
+
+	public static void relight(final Location location)
+	{
+		List<Location> locations = new ArrayList<>(1);
+		locations.add(location);
+		Lights.relight(locations);
+	}
+
+	public static void relight(final List<Location> locations)
+	{
+		if(locations.size() == 0) return;
+
+		// Block Relighter
+		for(Location location : locations)
+			relighter.relight(location.getBlock());
+
+		// Send chunks update
+		relighter.createLight();
+	}
 }
