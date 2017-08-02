@@ -31,11 +31,11 @@ public class Lights
 {
 	private static Relighter relighter = new Relighter();
 
-	public static void createLight(final Location location, final int light)
+	public static int createLight(final Location location, final int light)
 	{
 		List<Location> locations = new ArrayList<>(1);
 		locations.add(location);
-		Lights.createLight(locations, light);
+		return Lights.createLight(locations, light);
 
 //		NmsWorldUtil.setLight(location, light);
 //
@@ -57,23 +57,24 @@ public class Lights
 //		NmsChunkUtil.sendUpdate(LocationUtil.getCardinalDistance(location, BlockFace.NORTH_WEST, 15).getChunk(), PlayerUtil.getOnlinePlayers());
 	}
 
-	public static void createLight(final List<Location> locations, final int light)
+	public static int createLight(final List<Location> locations, final int light)
     {
-        if(locations.size() == 0) return;
+        if(locations.size() == 0)
+			return 0;
 
-	    // Block Relighter
+	    // Relighter
 	    for(Location location : locations)
 			relighter.setLight(location, light);
 
-	    // Send chunks update
-		relighter.createLight();
+	    // Create light and send chunks update
+		return relighter.createLight();
     }
 
-	public static void removeLight(final Location location)
+	public static int removeLight(final Location location)
 	{
 		List<Location> locations = new ArrayList<>(1);
 		locations.add(location);
-		Lights.removeLight(locations);
+		return Lights.removeLight(locations);
 
 //		NmsWorldUtil.setLight(location, 0);
 //
@@ -97,34 +98,36 @@ public class Lights
 //		NmsChunkUtil.sendUpdate(LocationUtil.getCardinalDistance(location, BlockFace.NORTH_WEST, 15).getChunk(), PlayerUtil.getOnlinePlayers());
 	}
 
-	public static void removeLight(final List<Location> locations)
+	public static int removeLight(final List<Location> locations)
     {
-        if(locations.size() == 0) return;
+        if(locations.size() == 0)
+			return 0;
 
 		// Relighter
 	    for(Location location : locations)
 			relighter.setLight(location, 0);
 
-		// Send chunks update
-		relighter.removeLight();
+		// Remove light and send chunks update
+		return relighter.removeLight();
     }
 
-	public static void relight(final Location location)
+	public static int relight(final Location location)
 	{
 		List<Location> locations = new ArrayList<>(1);
 		locations.add(location);
-		Lights.relight(locations);
+		return Lights.relight(locations);
 	}
 
-	public static void relight(final List<Location> locations)
+	public static int relight(final List<Location> locations)
 	{
-		if(locations.size() == 0) return;
+		if(locations.size() == 0)
+			return 0;
 
 		// Block Relighter
 		for(Location location : locations)
 			relighter.relight(location);
 
-		// Send chunks update
-		relighter.createLight();
+		// Relight and send chunks update
+		return relighter.createLight();
 	}
 }

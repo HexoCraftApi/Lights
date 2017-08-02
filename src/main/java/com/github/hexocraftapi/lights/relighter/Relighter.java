@@ -41,16 +41,28 @@ public class Relighter
 	public Relighter() {
 	}
 
-	public void setLight(Location location, int intensity)
+	public boolean setLight(Location location, int intensity)
 	{
-		addBlock(location, intensity);
+		// The number of transparent location found
+		int count = -airs.size();
 
+		//
 		if(isTransparent(location, -1, 0,  0))  addAir(location.clone().add(-1, 0, 0));
 		if(isTransparent(location,  1, 0,  0))  addAir(location.clone().add(1, 0, 0));
 		if(isTransparent(location,  0, 0, -1))  addAir(location.clone().add(0, 0, -1));
 		if(isTransparent(location,  0, 0,  1))  addAir(location.clone().add(0, 0, 1));
 		if(location.getY() > 0 && isTransparent(location, 0, -1, 0)) addAir(location.clone().add(0, -1, 0));
 		if(location.getY() < 256 && isTransparent(location, 0, 1, 0)) addAir(location.clone().add(0, 1, 0));
+
+		// Update the number of transparent location found
+		count += airs.size();
+
+		// Only add location if transparent block exist around
+		// the current location
+		if(count>0)
+			addBlock(location, intensity);
+
+		return count>0;
 	}
 
 	public void relight(Location location)
@@ -58,7 +70,7 @@ public class Relighter
 		addChunk(location);
 	}
 
-	public void createLight()
+	public int createLight()
 	{
 		synchronized(blocks)
 		{
@@ -80,16 +92,21 @@ public class Relighter
 						nmsChunk.sendUpdate(ChunkUtil.getClosePlayers(chunk, PlayerUtil.getOnlinePlayers(), 5));
 					}
 
+					// Number of created lights
+					int count = blocks.size();
+
 					//
 					blocks.clear();
 					airs.clear();
 					chunks.clear();
+
+					return count;
 				}
 			}
 		}
 	}
 
-	public void removeLight()
+	public int removeLight()
 	{
 		synchronized(blocks)
 		{
@@ -114,10 +131,15 @@ public class Relighter
 						nmsChunk.sendUpdate(ChunkUtil.getClosePlayers(chunk, PlayerUtil.getOnlinePlayers(), 5));
 					}
 
+					// Number of removed lights
+					int count = blocks.size();
+
 					//
 					blocks.clear();
 					airs.clear();
 					chunks.clear();
+
+					return count;
 				}
 			}
 		}
