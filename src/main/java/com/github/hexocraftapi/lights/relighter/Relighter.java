@@ -19,7 +19,9 @@ package com.github.hexocraftapi.lights.relighter;
 import com.github.hexocraftapi.nms.NmsChunk;
 import com.github.hexocraftapi.nms.utils.NmsChunkUtil;
 import com.github.hexocraftapi.nms.utils.NmsWorldUtil;
+import com.github.hexocraftapi.util.ChunkUtil;
 import com.github.hexocraftapi.util.LocationUtil;
+import com.github.hexocraftapi.util.PlayerUtil;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -75,7 +77,7 @@ public class Relighter
 					{
 						NmsChunk nmsChunk = NmsChunkUtil.initLighting(chunk);
 						nmsChunk.setModified(true);
-						nmsChunk.sendClosePlayersUpdate(5);
+						nmsChunk.sendUpdate(ChunkUtil.getClosePlayers(chunk, PlayerUtil.getOnlinePlayers(), 5));
 					}
 
 					//
@@ -109,7 +111,7 @@ public class Relighter
 					{
 						NmsChunk nmsChunk = NmsChunkUtil.initLighting(chunk);
 						nmsChunk.setModified(true);
-						nmsChunk.sendClosePlayersUpdate(5);
+						nmsChunk.sendUpdate(ChunkUtil.getClosePlayers(chunk, PlayerUtil.getOnlinePlayers(), 5));
 					}
 
 					//
