@@ -16,7 +16,7 @@ package com.github.hexocraftapi.lights;
  * limitations under the License.
  */
 
-import com.github.hexocraftapi.lights.relighter.BlockRelighter;
+import com.github.hexocraftapi.lights.relighter.Relighter;
 import org.bukkit.Location;
 
 import java.util.ArrayList;
@@ -29,7 +29,7 @@ import java.util.List;
  */
 public class Lights
 {
-	private static BlockRelighter relighter = new BlockRelighter();
+	private static Relighter relighter = new Relighter();
 
 	public static void createLight(final Location location, final int light)
 	{
@@ -37,7 +37,7 @@ public class Lights
 		locations.add(location);
 		Lights.createLight(locations, light);
 
-//		NmsWorldUtil.setBlockLight(location, light);
+//		NmsWorldUtil.setLight(location, light);
 //
 //		if(relighter.isTransparent(location, -1, 0,  0))  NmsWorldUtil.relightBlock(location.clone().add(-1, 0, 0));
 //		if(relighter.isTransparent(location,  1, 0,  0))  NmsWorldUtil.relightBlock(location.clone().add(1, 0, 0));
@@ -63,7 +63,7 @@ public class Lights
 
 	    // Block Relighter
 	    for(Location location : locations)
-			relighter.setBlockLight(location.getBlock(), light);
+			relighter.setLight(location, light);
 
 	    // Send chunks update
 		relighter.createLight();
@@ -75,7 +75,7 @@ public class Lights
 		locations.add(location);
 		Lights.removeLight(locations);
 
-//		NmsWorldUtil.setBlockLight(location, 0);
+//		NmsWorldUtil.setLight(location, 0);
 //
 //		if(relighter.isTransparent(location, -1, 0,  0))  NmsWorldUtil.relightBlock(location.clone().add(-1, 0, 0));
 //		if(relighter.isTransparent(location,  1, 0,  0))  NmsWorldUtil.relightBlock(location.clone().add(1, 0, 0));
@@ -101,9 +101,9 @@ public class Lights
     {
         if(locations.size() == 0) return;
 
-		// BlockRelighter
+		// Relighter
 	    for(Location location : locations)
-			relighter.setBlockLight(location.getBlock(), 0);
+			relighter.setLight(location, 0);
 
 		// Send chunks update
 		relighter.removeLight();
@@ -122,7 +122,7 @@ public class Lights
 
 		// Block Relighter
 		for(Location location : locations)
-			relighter.relight(location.getBlock());
+			relighter.relight(location);
 
 		// Send chunks update
 		relighter.createLight();

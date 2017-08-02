@@ -16,37 +16,33 @@ package com.github.hexocraftapi.lights.relighter;
  * limitations under the License.
  */
 
+import com.github.hexocraftapi.nms.NmsChunk;
 import com.github.hexocraftapi.nms.utils.NmsChunkUtil;
 import com.github.hexocraftapi.nms.utils.NmsWorldUtil;
 import com.github.hexocraftapi.util.LocationUtil;
 import com.github.hexocraftapi.util.PlayerUtil;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
-import org.bukkit.block.Block;
+import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * @author <b>Hexosse</b> (<a href="https://github.com/hexosse">on GitHub</a>))
- */
-public class BlockRelighter
+public class Relighter
 {
 	private final Set<LightLocation> blocks  = Collections.synchronizedSet(new HashSet<LightLocation>());
 	private final Set<Location>      airs    = Collections.synchronizedSet(new HashSet<Location>());
 	private final Set<Chunk>         chunks  = Collections.synchronizedSet(new HashSet<Chunk>());
 
 
-	public BlockRelighter() {
+	public Relighter() {
 	}
 
-	public void setBlockLight(Block block, int light)
+	public void setLight(Location location, int intensity)
 	{
-		Location location = block.getLocation();
-
-		addBlock(location, light);
+		addBlock(location, intensity);
 
 		if(isTransparent(location, -1, 0,  0))  addAir(location.clone().add(-1, 0, 0));
 		if(isTransparent(location,  1, 0,  0))  addAir(location.clone().add(1, 0, 0));
@@ -56,20 +52,18 @@ public class BlockRelighter
 		if(location.getY() < 256 && isTransparent(location, 0, 1, 0)) addAir(location.clone().add(0, 1, 0));
 	}
 
-	public void relight(Block block)
+	public void relight(Location location)
 	{
-		Location location = block.getLocation();
-
-		addBlock(location);
+		addChunk(location);
 	}
 
 	public void createLight()
 	{
 		synchronized(blocks)
 		{
-			synchronized(blocks)
+			synchronized(airs)
 			{
-				synchronized(blocks)
+				synchronized(chunks)
 				{
 					for(LightLocation ll : blocks)
 						NmsWorldUtil.setBlockLight(ll.getLocation(), ll.getLight());
@@ -80,8 +74,9 @@ public class BlockRelighter
 					// Update chunck
 					for(Chunk chunk : chunks)
 					{
-						NmsChunkUtil.initLighting(chunk);
-						NmsChunkUtil.sendUpdate(chunk, PlayerUtil.getOnlinePlayers());
+						NmsChunk nmsChunk = NmsChunkUtil.initLighting(chunk);
+						nmsChunk.setModified(true);
+						nmsChunk.sendUpdate(PlayerUtil.getOnlinePlayers());
 					}
 
 					//
@@ -97,9 +92,9 @@ public class BlockRelighter
 	{
 		synchronized(blocks)
 		{
-			synchronized(blocks)
+			synchronized(airs)
 			{
-				synchronized(blocks)
+				synchronized(chunks)
 				{
 					for(LightLocation ll : blocks)
 						NmsWorldUtil.setBlockLight(ll.getLocation(), 0);
@@ -113,8 +108,9 @@ public class BlockRelighter
 					// Update chunck
 					for(Chunk chunk : chunks)
 					{
-						NmsChunkUtil.initLighting(chunk);
-						NmsChunkUtil.sendUpdate(chunk, PlayerUtil.getOnlinePlayers());
+						NmsChunk nmsChunk = NmsChunkUtil.initLighting(chunk);
+						nmsChunk.setModified(true);
+						nmsChunk.sendUpdate(PlayerUtil.getOnlinePlayers());
 					}
 
 					//
@@ -131,10 +127,10 @@ public class BlockRelighter
 		blocks.add(new LightLocation(location, light));
 
 		// Chunk that could be affected by light change
-		addBlock(location);
+		addChunk(location);
 	}
 
-	protected synchronized void addBlock(Location location)
+	protected synchronized void addChunk(Location location)
 	{
 		// Chunk that could be affected by light change
 		chunks.add(location.getChunk());
@@ -153,7 +149,7 @@ public class BlockRelighter
 		airs.add(location);
 
 		// Chunk that could be affected by light change
-		addBlock(location);
+		addChunk(location);
 	}
 
 	private boolean isTransparent(Location location)
@@ -164,6 +160,16 @@ public class BlockRelighter
 	public boolean isTransparent(Location location, double x, double y, double z)
 	{
 		return isTransparent(location.clone().add(x, y, z));
+	}
+
+	private boolean isAir(Location location)
+	{
+		return location.getBlock().getType() == Material.AIR;
+	}
+
+	public boolean isAir(Location location, double x, double y, double z)
+	{
+		return isAir(location.clone().add(x, y, z));
 	}
 
 	private class LightLocation implements Comparable {
