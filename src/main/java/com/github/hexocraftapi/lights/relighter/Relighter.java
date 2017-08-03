@@ -149,6 +149,13 @@ public class Relighter
 	{
 		blocks.add(new LightLocation(location, light));
 
+		// Remove transparent location considered
+		// as air
+		synchronized(airs) {
+			if(airs.contains(location))
+				airs.remove(location);
+		}
+
 		// Chunk that could be affected by light change
 		addChunk(location);
 	}
@@ -233,6 +240,42 @@ public class Relighter
 				return 1;
 
 			return 0;
+		}
+
+		@Override
+		public boolean equals(Object o)
+		{
+			if(o == null)
+				return false;
+
+			if(o instanceof LightLocation)
+				return this.compareTo(o) == 0;
+
+			if(o instanceof Location)
+			{
+				Location loc = (Location)o;
+
+				if(loc.getBlockX() != location.getBlockX())
+					return false;
+
+				if(loc.getBlockY() != location.getBlockY())
+					return false;
+
+				if(loc.getBlockZ() != location.getBlockZ())
+					return false;
+
+				return true;
+			}
+
+			return false;
+		}
+
+		@Override
+		public int hashCode() {
+			int hash = 5;
+			hash = 23 * hash + (this.location != null ? this.location.hashCode() : 0);
+			hash = 23 * hash + light;
+			return hash;
 		}
 	}
 }
