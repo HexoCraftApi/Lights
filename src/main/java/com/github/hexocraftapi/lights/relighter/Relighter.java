@@ -78,11 +78,15 @@ public class Relighter
 			{
 				synchronized(chunks)
 				{
-					for(LightLocation ll : blocks)
+					for(LightLocation ll : blocks) {
 						NmsWorldUtil.setBlockLight(ll.getLocation(), ll.getLight());
+						NmsWorldUtil.setSkyLight(ll.getLocation(), ll.getLight()-1);
+					}
 
-					for(Location l : airs)
+					for(Location l : airs) {
+						NmsWorldUtil.relightSky(l);
 						NmsWorldUtil.relightBlock(l);
+					}
 
 					// Update chunck
 					for(Chunk chunk : chunks)
@@ -115,13 +119,17 @@ public class Relighter
 				synchronized(chunks)
 				{
 					for(LightLocation ll : blocks)
-						NmsWorldUtil.setBlockLight(ll.getLocation(), 0);
+					{
+//						NmsWorldUtil.setBlockLight(ll.getLocation(), 0);
+//						NmsWorldUtil.setSkyLight(ll.getLocation(), 0);
+						NmsWorldUtil.relightBlock(ll.getLocation());
+						NmsWorldUtil.relightSky(ll.getLocation());
+					}
 
-					for(Location l : airs)
-						NmsWorldUtil.relightSky(l);
-
-					for(Location l : airs)
+					for(Location l : airs) {
 						NmsWorldUtil.relightBlock(l);
+						NmsWorldUtil.relightSky(l);
+					}
 
 					// Update chunck
 					for(Chunk chunk : chunks)
